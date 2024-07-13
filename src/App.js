@@ -1,26 +1,15 @@
-import { useForm } from "react-hook-form";
 import "./App.css";
-import SearchInput from "./components/SearchInput";
+import NavBar from './components/NavBar';
+import Home from "./views/Home/Home";
+import { Box } from "@chakra-ui/react";
 
 function App() {
-  const {
-    register,
-    formState: { errors },
-  } = useForm({
-    mode: "onChange",
-  });
-
   return (
     <div className="App">
-      <SearchInput
-        name="searchSong"
-        id="searchSong"
-        rules={{}}
-        label=""
-        register={register}
-        errors={errors}
-        placeHolderText="Search to get the result"
-      />
+      <NavBar />
+      <Box pt="70px">
+        <Home />
+      </Box>
     </div>
   );
 }
