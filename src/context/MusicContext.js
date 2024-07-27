@@ -6,7 +6,8 @@ const MusicStateProvider = ({ children }) => {
     const audioRef = useRef(null)
     const [isPlaying, setIsPlaying] = useState(false)
     const [isPause, setIsPause] = useState(false)
-    const [volume, setVolume] = useState(1)
+    const [volume, setVolume] = useState(1);
+    const [selectedMusic, setSelectedMusic] = useState(null)
 
     const values = {
         isPlaying,
@@ -14,7 +15,10 @@ const MusicStateProvider = ({ children }) => {
         isPause,
         setIsPause,
         volume,
-        setVolume
+        setVolume,
+        audioRef,
+        selectedMusic,
+        setSelectedMusic
     }
 
     return (

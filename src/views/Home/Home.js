@@ -4,6 +4,7 @@ import { Box, Flex } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useDebounce } from "use-debounce";
 import { searchApiCall } from "../../utility/apiCalls/apiCallFunctions";
+import MusicCard from "../../components/MusicCard";
 
 const Home = () => {
     const {
@@ -16,6 +17,7 @@ const Home = () => {
     const searchVal = watch("searchData");
     const [debouncedTerm] = useDebounce(searchVal, 1000);
     const [searchResults, setSearchResults] = useState(null);
+
 
     const [isSearching, setIsSearching] = useState(false);
 
@@ -31,19 +33,21 @@ const Home = () => {
 
     useEffect(() => {
         if (debouncedTerm !== undefined && debouncedTerm !== "") {
-            setIsSearching(true); // Set isSearching to true before API call
+            setIsSearching(true);
             searchApiCall({
                 paramsData: {
                     term: debouncedTerm,
                 },
-            }).then((response) => {
-                setSearchResults(response?.tracks?.hits);
-            }).catch((error) => {
-
-                setSearchResults(null);
-            }).finally(() => {
-                setIsSearching(false); // Set isSearching to false after API call completes
-            });
+            })
+                .then((response) => {
+                    setSearchResults(response?.tracks?.hits);
+                })
+                .catch((error) => {
+                    setSearchResults(null);
+                })
+                .finally(() => {
+                    setIsSearching(false);
+                });
         } else {
             setSearchResults(null);
         }
@@ -73,11 +77,14 @@ const Home = () => {
                     onChangeCallBack={(e) => handleSearchData(e)}
                 />
             </Flex>
-            {isSearching ? <Box>Loading...</Box> :
-                searchResults && searchResults.length > 0 && (
-                    <Box>{searchResults[0]?.track?.hub?.type}</Box>
-                )
-            }
+            {isSearching ? (
+                <Box>Loading...</Box>
+            ) : searchResults && searchResults?.length > 0 ? searchResults?.map((data) => {
+                const musicData = data?.track
+                return <MusicCard data={musicData} />
+            }) : (
+                "No Data Found"
+            )}
         </Box>
     );
 };
