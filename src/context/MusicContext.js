@@ -5,23 +5,50 @@ const MusicContext = createContext();
 const MusicStateProvider = ({ children }) => {
   const audioRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [selectedMusicData, setSelectedMusicData] = useState(null);
+  const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
+
+  const [isShuffled, setIsShuffled] = useState(false);
+  const [isLooped, setIsLooped] = useState(false);
+  const [shuffledIndices, setShuffledIndices] = useState([]);
+
   const [selectedMusic, setSelectedMusic] = useState(null);
 
-  // Function to handle playing music
   const handlePlayMusic = (audioLink) => {
     if (audioRef.current) {
       // Check if a new song is selected
       if (audioLink && selectedMusic !== audioLink) {
         // Set new source for the new song
         audioRef.current.src = audioLink;
-        // Load the new source to ensure it's ready for playback
-        audioRef.current.load();
-      }
 
-      // Play audio from the current position
-      audioRef.current.play().then(() => {
-        setIsPlaying(true); // Set state to playing once audio starts
-      });
+        // Add event listener for canplaythrough
+        const onCanPlayThrough = () => {
+          audioRef.current
+            .play()
+            .then(() => {
+              setIsPlaying(true); // Set state to playing once audio starts
+            })
+            .catch((error) => {});
+        };
+
+        // Remove any existing listener to avoid duplicates
+        audioRef.current.removeEventListener(
+          "canplaythrough",
+          onCanPlayThrough
+        );
+
+        // Load the new source to ensure it's ready for playback
+        audioRef.current.addEventListener("canplaythrough", onCanPlayThrough);
+        audioRef.current.load();
+      } else {
+        // Just play if the song is already loaded
+        audioRef.current
+          .play()
+          .then(() => {
+            setIsPlaying(true);
+          })
+          .catch((error) => {});
+      }
     }
   };
 
@@ -33,14 +60,89 @@ const MusicStateProvider = ({ children }) => {
     }
   };
 
+  const shuffleArray = (array) => {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  };
+
+  const getCurrentTrack = (tracks) => {
+    if (isShuffled && shuffledIndices.length) {
+      return tracks[shuffledIndices[currentTrackIndex]];
+    }
+    return tracks[currentTrackIndex];
+  };
+
+  const handleNext = (tracks) => {
+    console.log(tracks);
+    const getIndex = tracks?.findIndex(
+      (trackObj) => trackObj?.track?.key === selectedMusic?.key
+    );
+    console.log(getIndex);
+    if (isShuffled && shuffledIndices.length) {
+      const nextIndex = (currentTrackIndex + 1) % shuffledIndices.length;
+      setCurrentTrackIndex(nextIndex);
+      const nextTrack = tracks[shuffledIndices[nextIndex]];
+      const finalTrackData = nextTrack?.track;
+      setSelectedMusic(finalTrackData.key);
+      setSelectedMusicData(finalTrackData);
+      handlePlayMusic(finalTrackData.hub.actions[1].uri);
+    } else {
+      const nextIndex = (currentTrackIndex + 1) % tracks.length;
+      setCurrentTrackIndex(nextIndex);
+      const nextTrack = tracks[nextIndex];
+      const finalTrackData = nextTrack?.track;
+      setSelectedMusic(finalTrackData.key);
+      setSelectedMusicData(finalTrackData);
+      handlePlayMusic(finalTrackData.hub.actions[1].uri);
+    }
+  };
+
+  const handlePrevious = (tracks) => {
+    if (isShuffled && shuffledIndices.length) {
+      const prevIndex =
+        (currentTrackIndex - 1 + shuffledIndices.length) %
+        shuffledIndices.length;
+      setCurrentTrackIndex(prevIndex);
+      const prevTrack = tracks[shuffledIndices[prevIndex]];
+      const finalTrackData = prevTrack?.track;
+      setSelectedMusic(finalTrackData.key);
+      setSelectedMusicData(finalTrackData);
+      handlePlayMusic(finalTrackData.hub.actions[1].uri);
+    } else {
+      const prevIndex = (currentTrackIndex - 1 + tracks.length) % tracks.length;
+      setCurrentTrackIndex(prevIndex);
+      const prevTrack = tracks[prevIndex];
+      const finalTrackData = prevTrack?.track;
+      setSelectedMusic(finalTrackData.key);
+      setSelectedMusicData(finalTrackData);
+      handlePlayMusic(finalTrackData.hub.actions[1].uri);
+    }
+  };
+
   const values = {
     isPlaying,
     setIsPlaying,
     audioRef,
     selectedMusic,
     setSelectedMusic,
+    selectedMusicData,
+    setSelectedMusicData,
     handlePlayMusic,
     handlePauseMusic,
+    isShuffled,
+    setIsShuffled,
+    isLooped,
+    setIsLooped,
+    shuffledIndices,
+    setShuffledIndices,
+    currentTrackIndex,
+    setCurrentTrackIndex,
+    handleNext,
+    handlePrevious,
+    getCurrentTrack,
   };
 
   return (

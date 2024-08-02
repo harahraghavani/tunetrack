@@ -1,5 +1,5 @@
 import "./App.css";
-import NavBar from './components/NavBar';
+import NavBar from "./components/NavBar";
 import Home from "./views/Home/Home";
 import { Box } from "@chakra-ui/react";
 
