@@ -1,72 +1,124 @@
-import SearchInput from "../../components/SearchInput";
-import { useForm } from "react-hook-form";
-import { Box, Flex, GridItem, SimpleGrid } from "@chakra-ui/react";
+// React and Third party imports
 import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { useDispatch, useSelector } from "react-redux";
+import { Box, Flex, GridItem, SimpleGrid } from "@chakra-ui/react";
 import { useDebounce } from "use-debounce";
-import { searchApiCall } from "../../utility/apiCalls/apiCallFunctions";
+
+// components
+import SearchInput from "../../components/SearchInput";
 import Spinner from "../../components/Spinner";
 import MusicCard from "../../components/MusicCard";
 import PlayerDrawer from "../../components/PlayerDrawer";
-import { useMusicStates } from "../../hooks/music/useMusicStates";
 import NoData from "../../components/NoData";
 
+// utility, hooks and redux
+import { searchApiCall } from "../../utility/apiCalls/apiCallFunctions";
+import { useMusicStates } from "../../hooks/music/useMusicStates";
+import { setSearchResults, setSearchVal } from "../../redux/reducer/MusicDataReducer";
+
 const Home = () => {
-  const { selectedMusicData, setSelectedMusicData, setPreviousVolume, setVolume } = useMusicStates();
+  // redux 
+  const dispatch = useDispatch();
+  const { searchVal, searchResults } = useSelector((state) => state.musicData);
+
+  // useMusicState custom hook
+  const {
+    selectedMusicData,
+    setSelectedMusicData,
+    setPreviousVolume,
+    setVolume,
+    audioRef,
+    selectedMusic,
+    handleNext,
+  } = useMusicStates();
+
+  // react hook form
   const {
     register,
     setValue,
-    watch,
     formState: { errors },
   } = useForm();
+
+  // states
   const [isCloseIcon, setIsCloseIcon] = useState(false);
-  const searchVal = watch("searchData");
   const [debouncedTerm] = useDebounce(searchVal, 1000);
-  const [searchResults, setSearchResults] = useState(null);
   const [isSearching, setIsSearching] = useState(false);
 
+  // function to handle search
   const handleSearchData = (e) => {
     const value = e?.target?.value;
     setIsCloseIcon(value !== "");
+    if (value !== "") {
+      dispatch(setSearchVal(value));
+    }
   };
 
   const clearOnClick = () => {
     setValue("searchData", "");
-    setSearchResults(null);
+    dispatch(setSearchVal(null));
+    dispatch(setSearchResults(null));
     setSelectedMusicData(null);
     setVolume(1);
     setPreviousVolume(1);
   };
 
-  useEffect(() => {
-    if (debouncedTerm !== undefined && debouncedTerm !== "") {
-      setIsSearching(true);
-      searchApiCall({
-        paramsData: {
-          term: debouncedTerm,
-        },
-      })
-        .then((response) => {
-          setSearchResults(response?.tracks?.hits);
+  const searchAPICallData = () => {
+    if (!searchResults) {
+      if (debouncedTerm !== null && debouncedTerm !== "") {
+        setIsSearching(true);
+        searchApiCall({
+          paramsData: {
+            term: debouncedTerm,
+          },
         })
-        .catch((error) => {
-          setSearchResults(null);
-        })
-        .finally(() => {
-          setIsSearching(false);
-        });
-    } else {
-      setSearchResults(null);
+          .then((response) => {
+            dispatch(setSearchResults(response?.tracks?.hits));
+          })
+          .catch((error) => {
+            dispatch(setSearchResults(null));
+          })
+          .finally(() => {
+            setIsSearching(false);
+          });
+      } else {
+        dispatch(setSearchResults(null));
+      }
     }
+
+  }
+
+  useEffect(() => {
+    searchAPICallData()
   }, [debouncedTerm]);
 
   useEffect(() => {
-    setIsCloseIcon(searchVal !== undefined && searchVal !== "");
-    if (searchVal !== undefined || searchVal !== "") {
+    setIsCloseIcon(searchVal !== null && searchVal !== "");
+    if (searchVal !== null || searchVal !== "") {
       setSelectedMusicData(null);
       setVolume(1);
       setPreviousVolume(1);
+      setValue("searchData", searchVal);
     }
   }, [searchVal]);
+
+  useEffect(() => {
+    if (audioRef.current) {
+      const handleEnded = () => {
+        if (searchResults.length > 0) {
+          handleNext(searchResults);
+        }
+      };
+
+      audioRef?.current?.addEventListener("ended", handleEnded);
+
+      return () => {
+        audioRef?.current?.removeEventListener("ended", handleEnded);
+      };
+    }
+  }, [audioRef.current, selectedMusic, searchResults, handleNext]);
+
+
 
   return (
     <>
@@ -74,20 +126,22 @@ const Home = () => {
         <Flex
           justifyContent="center"
           alignItems="center"
-          direction="row"
           height="100%"
+          mx={{ base: 8, md: 8 }}
         >
-          <SearchInput
-            id="searchData"
-            name="searchData"
-            register={register}
-            errors={errors}
-            rules={{}}
-            placeHolderText="Search to get results"
-            showCancel={isCloseIcon}
-            clearOnClick={clearOnClick}
-            onChangeCallBack={(e) => handleSearchData(e)}
-          />
+          <Box width={{ base: "100%", sm: "50%", md: "50%", lg: "30%" }}>
+            <SearchInput
+              id="searchData"
+              name="searchData"
+              register={register}
+              errors={errors}
+              rules={{}}
+              placeHolderText="Search to get results"
+              showCancel={isCloseIcon}
+              clearOnClick={clearOnClick}
+              onChangeCallBack={(e) => handleSearchData(e)}
+            />
+          </Box>
         </Flex>
         {isSearching ? (
           <Flex

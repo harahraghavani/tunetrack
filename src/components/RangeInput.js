@@ -1,7 +1,8 @@
 import React from 'react'
-import { Input } from '@chakra-ui/react'
+import { Input, useColorMode } from '@chakra-ui/react'
 
 const RangeInput = ({ value, max = 1, min, onChangeCallBack, step = "0.01" }) => {
+    const { colorMode } = useColorMode()
     return (
         <Input
             type="range"
@@ -13,6 +14,7 @@ const RangeInput = ({ value, max = 1, min, onChangeCallBack, step = "0.01" }) =>
             variant="filled"
             rounded="full"
             step={step}
+            backgroundColor={colorMode === "light" ? "white" : "rgba(255, 255, 255, 0.06)"}
         />
     )
 }

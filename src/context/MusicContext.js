@@ -147,6 +147,8 @@ const MusicStateProvider = ({ children }) => {
     }
   };
 
+
+
   const values = {
     isPlaying,
     setIsPlaying,

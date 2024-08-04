@@ -6,7 +6,7 @@ import {
 import { Input, InputRightElement } from "@chakra-ui/input";
 import React, { useState } from "react";
 import { ViewIcon, ViewOffIcon, CloseIcon } from "@chakra-ui/icons";
-import { Box, IconButton, InputGroup } from "@chakra-ui/react";
+import { Box, IconButton, InputGroup, useColorMode } from "@chakra-ui/react";
 
 const SearchInput = ({
     id,
@@ -21,6 +21,7 @@ const SearchInput = ({
     showCancel,
     clearOnClick
 }) => {
+    const { colorMode } = useColorMode()
     const { ref: inputRef, onChange, ...rest } = register(name, rules);
     const [showPassword, setShowPassword] = useState(false);
 
@@ -32,7 +33,7 @@ const SearchInput = ({
     };
 
     return (
-        <FormControl id={id} isInvalid={!!errors[name]} width={"30%"}>
+        <FormControl id={id} isInvalid={!!errors[name]} width={"100%"}>
             <FormLabel htmlFor={id}>{label}</FormLabel>
             {type === "password" ? (
                 <InputGroup>
@@ -60,6 +61,8 @@ const SearchInput = ({
             ) : (
                 <InputGroup>
                     <Input
+                        width="100%"
+                        minW={"100%"}
                         type={type}
                         ref={inputRef}
                         onChange={handleChange}
@@ -67,6 +70,21 @@ const SearchInput = ({
                         isInvalid={!!errors[name]}
                         _active={!!errors[name] ? { borderColor: "red.400" } : ""}
                         placeholder={placeHolderText}
+                        border={colorMode === "light" ? "1px solid rgba(0, 0, 0, 0.7)" : "1px solid rgba(255,255,255, 0.7)"}
+                        _placeholder={{ color: colorMode === "light" ? "rgba(0, 0, 0, 0.7)" : "rgba(255,255,255, 0.7)" }}
+                        sx={{
+                            "&:hover": {
+                                boxShadow: "none",
+                                border: "1px solid",
+                            },
+                            "&:focus": {
+                                boxShadow: "xl",
+                                border: colorMode === "light" ? "1px solid rgba(0, 0, 0, 0.4)" : "1px solid rgba(255,255,255, 0.4)",
+                            },
+                            "&:active": {
+                                boxShadow: "xl",
+                            },
+                        }}
                         {...rest}
                     />
                     {showCancel && (
