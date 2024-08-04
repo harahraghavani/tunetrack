@@ -7,12 +7,12 @@ const MusicStateProvider = ({ children }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [selectedMusicData, setSelectedMusicData] = useState(null);
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
-
   const [isShuffled, setIsShuffled] = useState(false);
   const [isLooped, setIsLooped] = useState(false);
   const [shuffledIndices, setShuffledIndices] = useState([]);
-
   const [selectedMusic, setSelectedMusic] = useState(null);
+  const [volume, setVolume] = useState(1)
+  const [previousVolume, setPreviousVolume] = useState(1);
 
   const handlePlayMusic = (audioLink) => {
     if (audioRef.current) {
@@ -28,7 +28,7 @@ const MusicStateProvider = ({ children }) => {
             .then(() => {
               setIsPlaying(true); // Set state to playing once audio starts
             })
-            .catch((error) => {});
+            .catch((error) => { });
         };
 
         // Remove any existing listener to avoid duplicates
@@ -47,7 +47,7 @@ const MusicStateProvider = ({ children }) => {
           .then(() => {
             setIsPlaying(true);
           })
-          .catch((error) => {});
+          .catch((error) => { });
       }
     }
   };
@@ -76,11 +76,9 @@ const MusicStateProvider = ({ children }) => {
   };
 
   const handleNext = (tracks) => {
-    console.log(tracks);
     const getIndex = tracks?.findIndex(
-      (trackObj) => trackObj?.track?.key === selectedMusic?.key
+      (trackObj) => trackObj["track"]?.key === selectedMusic
     );
-    console.log(getIndex);
     if (isShuffled && shuffledIndices.length) {
       const nextIndex = (currentTrackIndex + 1) % shuffledIndices.length;
       setCurrentTrackIndex(nextIndex);
@@ -90,7 +88,8 @@ const MusicStateProvider = ({ children }) => {
       setSelectedMusicData(finalTrackData);
       handlePlayMusic(finalTrackData.hub.actions[1].uri);
     } else {
-      const nextIndex = (currentTrackIndex + 1) % tracks.length;
+      const nextIndex = (getIndex + 1) % tracks.length;
+
       setCurrentTrackIndex(nextIndex);
       const nextTrack = tracks[nextIndex];
       const finalTrackData = nextTrack?.track;
@@ -101,6 +100,9 @@ const MusicStateProvider = ({ children }) => {
   };
 
   const handlePrevious = (tracks) => {
+    const getIndex = tracks?.findIndex(
+      (trackObj) => trackObj["track"]?.key === selectedMusic
+    );
     if (isShuffled && shuffledIndices.length) {
       const prevIndex =
         (currentTrackIndex - 1 + shuffledIndices.length) %
@@ -112,13 +114,36 @@ const MusicStateProvider = ({ children }) => {
       setSelectedMusicData(finalTrackData);
       handlePlayMusic(finalTrackData.hub.actions[1].uri);
     } else {
-      const prevIndex = (currentTrackIndex - 1 + tracks.length) % tracks.length;
+      const prevIndex = (getIndex - 1 + tracks.length) % tracks.length;
       setCurrentTrackIndex(prevIndex);
       const prevTrack = tracks[prevIndex];
       const finalTrackData = prevTrack?.track;
       setSelectedMusic(finalTrackData.key);
       setSelectedMusicData(finalTrackData);
       handlePlayMusic(finalTrackData.hub.actions[1].uri);
+    }
+  };
+
+  const handleVolumeChange = (event) => {
+    const newVolume = event.target.value;
+    setVolume(newVolume);
+    if (audioRef.current) {
+      audioRef.current.volume = newVolume;
+    }
+  };
+
+  const handleMute = () => {
+    if (volume === 0) {
+      setVolume(previousVolume);
+      if (audioRef.current) {
+        audioRef.current.volume = previousVolume;
+      }
+    } else {
+      setPreviousVolume(volume);
+      setVolume(0);
+      if (audioRef.current) {
+        audioRef.current.volume = 0;
+      }
     }
   };
 
@@ -143,6 +168,12 @@ const MusicStateProvider = ({ children }) => {
     handleNext,
     handlePrevious,
     getCurrentTrack,
+    volume,
+    setVolume,
+    handleVolumeChange,
+    previousVolume,
+    setPreviousVolume,
+    handleMute
   };
 
   return (

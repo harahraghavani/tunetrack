@@ -1,15 +1,6 @@
-import {
-  Box,
-  Card,
-  CardBody,
-  Heading,
-  IconButton,
-  Text,
-  useDisclosure,
-} from "@chakra-ui/react";
+import { Box, Card, CardBody, Heading, IconButton, Text } from "@chakra-ui/react";
 import { FaRegCirclePlay, FaRegCirclePause } from "react-icons/fa6";
-import { useMusicStates } from "../hooks/music/useMusicStates"; // Assuming the hook is stored here.
-import PlayerDrawer from "./PlayerDrawer";
+import { useMusicStates } from "../hooks/music/useMusicStates";
 
 const MusicCard = ({ data }) => {
   const {

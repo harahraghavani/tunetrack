@@ -9,6 +9,9 @@ import {
 import { FaRegCirclePause, FaRegCirclePlay } from "react-icons/fa6";
 import { MdSkipNext, MdSkipPrevious } from "react-icons/md";
 import { useMusicStates } from "../hooks/music/useMusicStates";
+import RangeInput from "./RangeInput";
+import { IoIosVolumeHigh, IoIosVolumeLow, IoIosVolumeOff } from "react-icons/io";
+import { Audio } from "react-loader-spinner";
 
 const PlayerDrawer = ({ data }) => {
   const { colorMode } = useColorMode();
@@ -22,7 +25,11 @@ const PlayerDrawer = ({ data }) => {
     selectedMusic,
     setSelectedMusic,
     setSelectedMusicData,
+    volume,
+    handleVolumeChange,
+    handleMute
   } = useMusicStates();
+
   if (!selectedMusicData) return null;
 
   const { hub, images, subtitle, title } = selectedMusicData;
@@ -46,6 +53,7 @@ const PlayerDrawer = ({ data }) => {
     }
   };
 
+
   return (
     <Box
       position="fixed"
@@ -59,43 +67,80 @@ const PlayerDrawer = ({ data }) => {
       backgroundColor={colorMode === "light" ? "gray.50" : "gray.700"}
       transition={"all 0.3s ease"}
     >
-      <Flex alignItems="center">
-        <Image src={coverart} alt={title} boxSize="50px" mr={4} />
-        <Box>
-          <Text fontSize="md" fontWeight="bold">
-            {title}
-          </Text>
-          <Text fontSize="sm">{subtitle}</Text>
-        </Box>
-      </Flex>
-      <Flex>
-        <IconButton
-          aria-label={"Previous"}
-          icon={<MdSkipPrevious />}
-          _hover={{ bg: "transparent", boxShadow: "none" }}
-          bg="transparent"
-          boxShadow={"none"}
-          fontSize="28px"
-          onClick={() => handlePrevious(data)}
-        />
-        <IconButton
-          aria-label={isPlaying ? "Pause" : "Play"}
-          icon={isPlaying ? <FaRegCirclePause /> : <FaRegCirclePlay />}
-          _hover={{ bg: "transparent", boxShadow: "none" }}
-          onClick={togglePlayback}
-          bg="transparent"
-          boxShadow={"none"}
-          fontSize="28px"
-        />
-        <IconButton
-          aria-label={"Next"}
-          icon={<MdSkipNext />}
-          _hover={{ bg: "transparent", boxShadow: "none" }}
-          bg="transparent"
-          boxShadow={"none"}
-          fontSize="28px"
-          onClick={() => handleNext(data)}
-        />
+      <Flex justifyContent="space-between" alignItems="center" width="100%">
+        <Flex alignItems="center">
+          <Image src={coverart} alt={title} boxSize="50px" mr={4} />
+          <Box>
+            <Text fontSize="md" fontWeight="bold">
+              {title}
+            </Text>
+            <Text fontSize="sm">{subtitle}</Text>
+          </Box>
+        </Flex>
+        <Flex>
+          <IconButton
+            aria-label={"Previous"}
+            icon={<MdSkipPrevious />}
+            _hover={{ bg: "transparent", boxShadow: "none" }}
+            bg="transparent"
+            boxShadow={"none"}
+            fontSize="28px"
+            onClick={() => handlePrevious(data)}
+          />
+          <IconButton
+            aria-label={isPlaying ? "Pause" : "Play"}
+            icon={isPlaying ? <FaRegCirclePause /> : <FaRegCirclePlay />}
+            _hover={{ bg: "transparent", boxShadow: "none" }}
+            onClick={togglePlayback}
+            bg="transparent"
+            boxShadow={"none"}
+            fontSize="28px"
+          />
+          <IconButton
+            aria-label={"Next"}
+            icon={<MdSkipNext />}
+            _hover={{ bg: "transparent", boxShadow: "none" }}
+            bg="transparent"
+            boxShadow={"none"}
+            fontSize="28px"
+            onClick={() => handleNext(data)}
+          />
+        </Flex>
+        <Flex justifyContent="center" alignItems="center" gap={2}>
+          <Box>
+            {
+              isPlaying && <Audio
+                height="25"
+                width="25"
+                color={colorMode === "light" ? "#000000" : "#FFFFFF"}
+                ariaLabel="audio-loading"
+                wrapperStyle={{}}
+                wrapperClass="wrapper-class"
+                visible={true}
+
+              />
+            }
+          </Box>
+          <Box>
+            {
+              volume <= 0 && <IoIosVolumeOff cursor={"pointer"} size={25} onClick={handleMute} />
+            }
+            {
+              volume > 0 && volume < 0.5 && <IoIosVolumeLow cursor={"pointer"} size={25} onClick={handleMute} />
+            }
+            {
+              volume >= 0.5 && <IoIosVolumeHigh size={25} cursor={"pointer"} onClick={handleMute} />
+            }
+          </Box>
+          <RangeInput
+            max={1}
+            min={0}
+            value={volume}
+            onChangeCallBack={(e) => {
+              handleVolumeChange(e);
+            }}
+          />
+        </Flex>
       </Flex>
     </Box>
   );

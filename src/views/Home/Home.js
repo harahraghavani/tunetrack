@@ -8,9 +8,10 @@ import Spinner from "../../components/Spinner";
 import MusicCard from "../../components/MusicCard";
 import PlayerDrawer from "../../components/PlayerDrawer";
 import { useMusicStates } from "../../hooks/music/useMusicStates";
+import NoData from "../../components/NoData";
 
 const Home = () => {
-  const { selectedMusicData, setSelectedMusicData } = useMusicStates();
+  const { selectedMusicData, setSelectedMusicData, setPreviousVolume, setVolume } = useMusicStates();
   const {
     register,
     setValue,
@@ -32,6 +33,8 @@ const Home = () => {
     setValue("searchData", "");
     setSearchResults(null);
     setSelectedMusicData(null);
+    setVolume(1);
+    setPreviousVolume(1);
   };
 
   useEffect(() => {
@@ -60,6 +63,8 @@ const Home = () => {
     setIsCloseIcon(searchVal !== undefined && searchVal !== "");
     if (searchVal !== undefined || searchVal !== "") {
       setSelectedMusicData(null);
+      setVolume(1);
+      setPreviousVolume(1);
     }
   }, [searchVal]);
 
@@ -119,7 +124,7 @@ const Home = () => {
             </SimpleGrid>
           </Box>
         ) : (
-          "No Data Found"
+          <NoData isSearch={true} />
         )}
       </Box>
       {selectedMusicData && <PlayerDrawer data={searchResults} />}
