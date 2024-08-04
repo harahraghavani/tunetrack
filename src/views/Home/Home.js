@@ -152,7 +152,7 @@ const Home = () => {
             <Spinner />
           </Flex>
         ) : searchResults && searchResults?.length > 0 ? (
-          <Box my="50px">
+          <Box mt="50px" mb="200px">
             <SimpleGrid
               justifyContent="center"
               alignItems="center"
