@@ -1,4 +1,4 @@
-import { Skeleton, useColorMode } from "@chakra-ui/react";
+import { useColorMode } from "@chakra-ui/react";
 import { Audio } from "react-loader-spinner";
 
 const Spinner = () => {

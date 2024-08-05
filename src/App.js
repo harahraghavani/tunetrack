@@ -1,15 +1,41 @@
+// React and Third party libraries
+import { Route, Routes } from "react-router-dom";
+import { Suspense, lazy } from "react";
+import { Flex } from "@chakra-ui/react";
+
+// components
+import RotatingLinesLoader from "./components/RotatingLinesLoader";
+import PrivateRoute from "./router/PrivateRoute";
+
+// css
 import "./App.css";
-import NavBar from "./components/NavBar";
-import Home from "./views/Home/Home";
-import { Box } from "@chakra-ui/react";
+
+// pages
+const AuthPage = lazy(() => import("./views/authentication/Auth"));
+const HomePage = lazy(() => import("./views/Home/Home"));
+const FavouritePage = lazy(() => import("./views/Favourite/Favourite"));
 
 function App() {
   return (
     <div className="App">
-      <NavBar />
-      <Box pt="70px">
-        <Home />
-      </Box>
+      <Suspense
+        fallback={
+          <Flex justifyContent="center" alignItems="center" height="100svh">
+            <RotatingLinesLoader />
+          </Flex>
+        }
+      >
+        <Routes>
+          {/* PUBLIC ROUTES */}
+          <Route path="/login" element={<AuthPage />} />
+          {/* PRIVATE ROUTES  */}
+          <Route element={<PrivateRoute />}>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/favourite" element={<FavouritePage />} />
+            <Route path="/*" element={<HomePage />} />
+          </Route>
+        </Routes>
+      </Suspense>
     </div>
   );
 }

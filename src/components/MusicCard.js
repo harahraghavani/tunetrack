@@ -1,6 +1,14 @@
-import { Box, Card, CardBody, Heading, IconButton, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Card,
+  CardBody,
+  Heading,
+  IconButton,
+  Text,
+} from "@chakra-ui/react";
 import { FaRegCirclePlay, FaRegCirclePause } from "react-icons/fa6";
 import { useMusicStates } from "../hooks/music/useMusicStates";
+import { IoAddCircleOutline } from "react-icons/io5";
 
 const MusicCard = ({ data }) => {
   const {
@@ -76,7 +84,7 @@ const MusicCard = ({ data }) => {
             alignItems="center"
             justifyContent="center"
             borderRadius="full"
-            boxShadow="md"
+            boxShadow="none"
             cursor="pointer"
           >
             <audio ref={audioRef} style={{ display: "none" }}></audio>
@@ -99,6 +107,29 @@ const MusicCard = ({ data }) => {
             />
           </Box>
         </CardBody>
+        <Box
+          className="addButton"
+          position="absolute"
+          opacity={{ base: 1 }}
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          borderRadius="md"
+          boxShadow="none"
+          cursor="pointer"
+          right="5px"
+          top="5px"
+          bg={"white"}
+        >
+          <IconButton
+            aria-label={"add-to-playlist"}
+            className="addButton"
+            icon={<IoAddCircleOutline />}
+            onClick={() => {}}
+            fontSize="25px"
+            color={"black"}
+          />
+        </Box>
       </Card>
     </>
   );

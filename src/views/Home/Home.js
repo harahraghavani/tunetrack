@@ -1,5 +1,5 @@
 // React and Third party imports
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { Box, Flex, GridItem, SimpleGrid } from "@chakra-ui/react";
@@ -11,14 +11,21 @@ import Spinner from "../../components/Spinner";
 import MusicCard from "../../components/MusicCard";
 import PlayerDrawer from "../../components/PlayerDrawer";
 import NoData from "../../components/NoData";
+import NavBar from "../../components/NavBar";
 
 // utility, hooks and redux
 import { searchApiCall } from "../../utility/apiCalls/apiCallFunctions";
 import { useMusicStates } from "../../hooks/music/useMusicStates";
-import { setSearchResults, setSearchVal } from "../../redux/reducer/MusicDataReducer";
+import {
+  setSearchResults,
+  setSearchVal,
+} from "../../redux/reducer/MusicDataReducer";
 
 const Home = () => {
-  // redux 
+  const drawerRef = useRef(null);
+  const [height, setHeight] = useState(0);
+
+  // redux
   const dispatch = useDispatch();
   const { searchVal, searchResults } = useSelector((state) => state.musicData);
 
@@ -85,11 +92,10 @@ const Home = () => {
         dispatch(setSearchResults(null));
       }
     }
-
-  }
+  };
 
   useEffect(() => {
-    searchAPICallData()
+    searchAPICallData();
   }, [debouncedTerm]);
 
   useEffect(() => {
@@ -118,11 +124,16 @@ const Home = () => {
     }
   }, [audioRef.current, selectedMusic, searchResults, handleNext]);
 
-
+  useEffect(() => {
+    if (drawerRef?.current) {
+      setHeight(drawerRef?.current?.offsetHeight);
+    }
+  }, [drawerRef?.current]);
 
   return (
     <>
-      <Box minH="calc(100vh - 70px)" position="relative" width="100%">
+      <NavBar />
+      <Box minH="calc(100vh - 70px)" position="relative" width="100%" pt="70px">
         <Flex
           justifyContent="center"
           alignItems="center"
@@ -152,7 +163,11 @@ const Home = () => {
             <Spinner />
           </Flex>
         ) : searchResults && searchResults?.length > 0 ? (
-          <Box mt="50px" mb="200px">
+          <Box
+            mt="50px"
+            mb={height === 0 ? "50px" : height + 40}
+            transition={"all 0.3s ease"}
+          >
             <SimpleGrid
               justifyContent="center"
               alignItems="center"
@@ -181,7 +196,9 @@ const Home = () => {
           <NoData isSearch={true} />
         )}
       </Box>
-      {selectedMusicData && <PlayerDrawer data={searchResults} />}
+      {selectedMusicData && (
+        <PlayerDrawer data={searchResults} drawerRef={drawerRef} />
+      )}
     </>
   );
 };
