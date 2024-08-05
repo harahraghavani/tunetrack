@@ -9,8 +9,18 @@ import {
 import { FaRegCirclePlay, FaRegCirclePause } from "react-icons/fa6";
 import { useMusicStates } from "../hooks/music/useMusicStates";
 import { IoAddCircleOutline } from "react-icons/io5";
+import { useFirebase } from "../hooks/firebase/useFirebase";
+import { FaCheckCircle } from "react-icons/fa";
 
 const MusicCard = ({ data }) => {
+  const { states, firebaseMethods } = useFirebase();
+  const { addSongToFavouriteList, removeSongFromFavouriteList } =
+    firebaseMethods;
+  const { favouriteList, loader, isAdd } = states;
+
+  // Check for the presence of the song in the favourite list
+  const isFavourite = favouriteList.some((ele) => ele.key === data.key);
+
   const {
     audioRef,
     isPlaying,
@@ -39,6 +49,21 @@ const MusicCard = ({ data }) => {
       setSelectedMusicData(data);
       handlePlayMusic(audioLink); // Start playing the new track
     }
+  };
+
+  const displayIcon = () => {
+    return isFavourite ? (
+      <FaCheckCircle
+        color="green"
+        onClick={() => removeSongFromFavouriteList(data.key)}
+      />
+    ) : (
+      <IoAddCircleOutline
+        onClick={async () => {
+          await addSongToFavouriteList({ data });
+        }}
+      />
+    );
   };
 
   return (
@@ -116,18 +141,27 @@ const MusicCard = ({ data }) => {
           justifyContent="center"
           borderRadius="md"
           boxShadow="none"
-          cursor="pointer"
-          right="5px"
-          top="5px"
+          right={0}
+          top={0}
+          width={"auto"}
           bg={"white"}
+          cursor="default"
+          borderTopLeftRadius={0}
+          borderBottomEndRadius={0}
+          borderTopRightRadius={0}
+          borderBottomLeftRadius={"10px"}
         >
           <IconButton
             aria-label={"add-to-playlist"}
             className="addButton"
-            icon={<IoAddCircleOutline />}
-            onClick={() => {}}
-            fontSize="25px"
+            icon={displayIcon()}
+            fontSize="20px"
             color={"black"}
+            isDisabled={loader || isAdd === data?.key}
+            borderTopLeftRadius={0}
+            borderBottomEndRadius={0}
+            borderTopRightRadius={0}
+            borderBottomLeftRadius={"10px"}
           />
         </Box>
       </Card>

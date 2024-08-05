@@ -20,8 +20,12 @@ import {
   setSearchResults,
   setSearchVal,
 } from "../../redux/reducer/MusicDataReducer";
+import { useFirebase } from "../../hooks/firebase/useFirebase";
 
 const Home = () => {
+  const { states } = useFirebase();
+  const { loader } = states;
+
   const drawerRef = useRef(null);
   const [height, setHeight] = useState(0);
 
