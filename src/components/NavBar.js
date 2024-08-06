@@ -3,10 +3,11 @@ import { CiLight, CiDark, CiHeart } from "react-icons/ci";
 import React, { useEffect, useRef, useState } from "react";
 import { IoIosLogOut } from "react-icons/io";
 import { useFirebase } from "../hooks/firebase/useFirebase";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useMusicStates } from "../hooks/music/useMusicStates";
 
 const NavBar = () => {
+  const loaction = useLocation();
   const { firebaseMethods } = useFirebase();
   const { logoutUser } = firebaseMethods;
   const { colorMode, toggleColorMode } = useColorMode();
@@ -79,16 +80,18 @@ const NavBar = () => {
               <CiLight size={35} />
             )}
           </Box>
-          <Box cursor={"pointer"}>
-            <CiHeart
-              size={35}
-              onClick={() => {
-                setIsPlaying(!isPlaying);
-                setSelectedMusicData(null);
-                navigate("/favourite");
-              }}
-            />
-          </Box>
+          {loaction.pathname !== "/favourite" && (
+            <Box cursor={"pointer"}>
+              <CiHeart
+                size={35}
+                onClick={() => {
+                  setIsPlaying(!isPlaying);
+                  setSelectedMusicData(null);
+                  navigate("/favourite");
+                }}
+              />
+            </Box>
+          )}
           <Box cursor={"pointer"}>
             <IoIosLogOut size={35} onClick={logoutUser} />
           </Box>
