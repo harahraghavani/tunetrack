@@ -19,6 +19,7 @@ import PlayerControls from "./PlayerControls";
 
 const PlayerDrawer = ({ data, drawerRef }) => {
   const { colorMode } = useColorMode();
+
   const {
     isPlaying,
     selectedMusicData,

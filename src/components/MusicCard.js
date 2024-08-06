@@ -82,54 +82,107 @@ const MusicCard = ({ data }) => {
             transition: "opacity 0.3s ease, transform 0.3s ease",
             boxShadow: "none",
           },
+          "& .image-container": {
+            filter: "blur(5px) brightness(0.8)",
+            transition: "filter 0.3s ease", // Smooth transition for blur and darkening
+          },
         }}
       >
-        <img
-          src={coverart}
-          alt="Music"
-          width="100%"
-          height="auto"
-          loading="lazy"
-        />
-        <CardBody position="relative" p={4}>
-          <Heading size="sm" textTransform="uppercase" fontWeight="bold">
-            {title}
-          </Heading>
-          <Text mt={2} fontSize="sm">
-            {subtitle}
-          </Text>
-          <Box
+        <Box position="relative" className="image-container">
+          <img
+            src={coverart}
+            alt="Music"
+            width="100%"
+            height="auto"
+            loading="lazy"
+            className="music-image"
+            style={{
+              transition: "transform 0.3s ease, filter 0.3s ease", // Add smooth transition for image effects
+            }}
+          />
+        </Box>
+        <Box
+          className="playButton"
+          position="absolute"
+          right="50%"
+          bottom="50%"
+          left="50%"
+          top="30%"
+          opacity={{ base: 1, lg: 0 }}
+          transition="opacity 0.3s ease, transform 0.3s ease"
+          display={{
+            base: "none",
+            md: "flex",
+          }}
+          alignItems="center"
+          justifyContent="center"
+          borderRadius="full"
+          boxShadow="none"
+          cursor="pointer"
+        >
+          <audio ref={audioRef} style={{ display: "none" }}></audio>
+          <IconButton
+            aria-label={
+              selectedMusic === data.key && isPlaying ? "Pause" : "Play"
+            }
+            color={"white"}
             className="playButton"
-            position="absolute"
-            right="25px"
-            bottom="25px"
-            opacity={{ base: 1, lg: 0 }}
-            transition="opacity 0.3s ease, transform 0.3s ease"
-            display="flex"
+            _hover={{ bg: "transparent", boxShadow: "none" }}
+            icon={
+              selectedMusic === data.key && isPlaying ? (
+                <FaRegCirclePause />
+              ) : (
+                <FaRegCirclePlay />
+              )
+            }
+            onClick={togglePlayback}
+            bg="transparent"
+            fontSize="24px"
+          />
+        </Box>
+
+        <CardBody position="relative" p={4}>
+          <Box
+            display={{
+              base: "flex",
+              md: "block",
+            }}
             alignItems="center"
-            justifyContent="center"
-            borderRadius="full"
-            boxShadow="none"
-            cursor="pointer"
+            justifyContent="space-between"
           >
-            <audio ref={audioRef} style={{ display: "none" }}></audio>
-            <IconButton
-              aria-label={
-                selectedMusic === data.key && isPlaying ? "Pause" : "Play"
-              }
-              className="playButton"
-              _hover={{ bg: "transparent", boxShadow: "none" }}
-              icon={
-                selectedMusic === data.key && isPlaying ? (
-                  <FaRegCirclePause />
-                ) : (
-                  <FaRegCirclePlay />
-                )
-              }
-              onClick={togglePlayback}
-              bg="transparent"
-              fontSize="24px"
-            />
+            <Box>
+              <Heading size="sm" textTransform="uppercase" fontWeight="bold">
+                {title}
+              </Heading>
+              <Text mt={2} fontSize="sm">
+                {subtitle}
+              </Text>
+            </Box>
+            <Box
+              display={{
+                base: "block",
+                md: "none",
+              }}
+            >
+              <audio ref={audioRef} style={{ display: "none" }}></audio>
+              <IconButton
+                aria-label={
+                  selectedMusic === data.key && isPlaying ? "Pause" : "Play"
+                }
+                className="responvivePlayButton"
+                _hover={{ bg: "transparent", boxShadow: "none" }}
+                icon={
+                  selectedMusic === data.key && isPlaying ? (
+                    <FaRegCirclePause />
+                  ) : (
+                    <FaRegCirclePlay />
+                  )
+                }
+                onClick={togglePlayback}
+                bg="transparent"
+                fontSize="24px"
+              />
+            </Box>
           </Box>
         </CardBody>
         <Box

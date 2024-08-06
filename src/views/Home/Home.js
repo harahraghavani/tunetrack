@@ -26,9 +26,6 @@ const Home = () => {
   const { states } = useFirebase();
   const { loader } = states;
 
-  const drawerRef = useRef(null);
-  const [height, setHeight] = useState(0);
-
   // redux
   const dispatch = useDispatch();
   const { searchVal, searchResults } = useSelector((state) => state.musicData);
@@ -42,6 +39,9 @@ const Home = () => {
     audioRef,
     selectedMusic,
     handleNext,
+    drawerRef,
+    height,
+    setHeight,
   } = useMusicStates();
 
   // react hook form

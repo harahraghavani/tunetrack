@@ -28,6 +28,8 @@ const RangeInput = ({
       transition="all 0.3s linear"
       px={isStep ? 0 : "auto"}
       border={isStep ? "none" : ""}
+      fillColor="teal" // Optional: Customize the fill color
+      trackColor="gray.300" // Optional: Customize the track color
     />
   );
 };

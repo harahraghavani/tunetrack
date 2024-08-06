@@ -11,10 +11,12 @@ const MusicStateProvider = ({ children }) => {
   const [isLooped, setIsLooped] = useState(false);
   const [shuffledIndices, setShuffledIndices] = useState([]);
   const [selectedMusic, setSelectedMusic] = useState(null);
-  const [volume, setVolume] = useState(1)
+  const [volume, setVolume] = useState(1);
   const [previousVolume, setPreviousVolume] = useState(1);
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
+  const drawerRef = useRef(null);
+  const [height, setHeight] = useState(0);
 
   const handlePlayMusic = (audioLink) => {
     if (audioRef.current) {
@@ -30,7 +32,7 @@ const MusicStateProvider = ({ children }) => {
             .then(() => {
               setIsPlaying(true); // Set state to playing once audio starts
             })
-            .catch((error) => { });
+            .catch((error) => {});
         };
 
         // Remove any existing listener to avoid duplicates
@@ -49,7 +51,7 @@ const MusicStateProvider = ({ children }) => {
           .then(() => {
             setIsPlaying(true);
           })
-          .catch((error) => { });
+          .catch((error) => {});
       }
     }
   };
@@ -77,10 +79,13 @@ const MusicStateProvider = ({ children }) => {
     return tracks[currentTrackIndex];
   };
 
-  const handleNext = (tracks) => {
-    const getIndex = tracks?.findIndex(
-      (trackObj) => trackObj["track"]?.key === selectedMusic
-    );
+  const handleNext = (tracks, isFirebaseData = false) => {
+    const getIndex = isFirebaseData
+      ? tracks?.findIndex((trackObj) => trackObj?.key === selectedMusic)
+      : tracks?.findIndex(
+          (trackObj) => trackObj["track"]?.key === selectedMusic
+        );
+
     if (isShuffled && shuffledIndices.length) {
       const nextIndex = (currentTrackIndex + 1) % shuffledIndices.length;
       setCurrentTrackIndex(nextIndex);
@@ -91,20 +96,21 @@ const MusicStateProvider = ({ children }) => {
       handlePlayMusic(finalTrackData.hub.actions[1].uri);
     } else {
       const nextIndex = (getIndex + 1) % tracks.length;
-
       setCurrentTrackIndex(nextIndex);
       const nextTrack = tracks[nextIndex];
-      const finalTrackData = nextTrack?.track;
-      setSelectedMusic(finalTrackData.key);
+      const finalTrackData = isFirebaseData ? nextTrack : nextTrack?.track;
+      setSelectedMusic(finalTrackData?.key);
       setSelectedMusicData(finalTrackData);
-      handlePlayMusic(finalTrackData.hub.actions[1].uri);
+      handlePlayMusic(finalTrackData?.hub?.actions[1].uri);
     }
   };
 
-  const handlePrevious = (tracks) => {
-    const getIndex = tracks?.findIndex(
-      (trackObj) => trackObj["track"]?.key === selectedMusic
-    );
+  const handlePrevious = (tracks, isFirebaseData = false) => {
+    const getIndex = isFirebaseData
+      ? tracks?.findIndex((trackObj) => trackObj?.key === selectedMusic)
+      : tracks?.findIndex(
+          (trackObj) => trackObj["track"]?.key === selectedMusic
+        );
     if (isShuffled && shuffledIndices.length) {
       const prevIndex =
         (currentTrackIndex - 1 + shuffledIndices.length) %
@@ -119,7 +125,7 @@ const MusicStateProvider = ({ children }) => {
       const prevIndex = (getIndex - 1 + tracks.length) % tracks.length;
       setCurrentTrackIndex(prevIndex);
       const prevTrack = tracks[prevIndex];
-      const finalTrackData = prevTrack?.track;
+      const finalTrackData = isFirebaseData ? prevTrack : prevTrack?.track;
       setSelectedMusic(finalTrackData.key);
       setSelectedMusicData(finalTrackData);
       handlePlayMusic(finalTrackData.hub.actions[1].uri);
@@ -161,28 +167,31 @@ const MusicStateProvider = ({ children }) => {
     setCurrentTime(newTime);
   };
 
-
   useEffect(() => {
     if (audioRef?.current) {
       const handleTimeUpdate = () => {
-        setCurrentTime(audioRef.current.currentTime);
+        setCurrentTime(audioRef?.current?.currentTime);
       };
 
       const handleLoadedMetadata = () => {
-        setDuration(audioRef.current.duration);
+        setDuration(audioRef?.current?.duration);
       };
 
-      audioRef.current.addEventListener('timeupdate', handleTimeUpdate);
-      audioRef.current.addEventListener('loadedmetadata', handleLoadedMetadata);
+      audioRef?.current?.addEventListener("timeupdate", handleTimeUpdate);
+      audioRef?.current?.addEventListener(
+        "loadedmetadata",
+        handleLoadedMetadata
+      );
 
       return () => {
-        audioRef.current.removeEventListener('timeupdate', handleTimeUpdate);
-        audioRef.current.removeEventListener('loadedmetadata', handleLoadedMetadata);
+        audioRef?.current?.removeEventListener("timeupdate", handleTimeUpdate);
+        audioRef?.current?.removeEventListener(
+          "loadedmetadata",
+          handleLoadedMetadata
+        );
       };
     }
-  }, [audioRef.current]);
-
-
+  }, [audioRef?.current]);
 
   const values = {
     isPlaying,
@@ -214,7 +223,10 @@ const MusicStateProvider = ({ children }) => {
     currentTime,
     duration,
     handleTimeUpdate,
-    handleSeek
+    handleSeek,
+    drawerRef,
+    height,
+    setHeight,
   };
 
   return (

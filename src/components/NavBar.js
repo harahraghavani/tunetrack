@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { IoIosLogOut } from "react-icons/io";
 import { useFirebase } from "../hooks/firebase/useFirebase";
 import { useNavigate } from "react-router-dom";
+import { useMusicStates } from "../hooks/music/useMusicStates";
 
 const NavBar = () => {
   const { firebaseMethods } = useFirebase();
@@ -12,6 +13,7 @@ const NavBar = () => {
   const navbarRef = useRef(null);
   const [hasScrolled, setHasScrolled] = useState(false);
   const navigate = useNavigate();
+  const { isPlaying, setIsPlaying, setSelectedMusicData } = useMusicStates();
 
   useEffect(() => {
     let prevScrollpos = window.pageYOffset;
@@ -78,7 +80,14 @@ const NavBar = () => {
             )}
           </Box>
           <Box cursor={"pointer"}>
-            <CiHeart size={35} onClick={() => navigate("/favourite")} />
+            <CiHeart
+              size={35}
+              onClick={() => {
+                setIsPlaying(!isPlaying);
+                setSelectedMusicData(null);
+                navigate("/favourite");
+              }}
+            />
           </Box>
           <Box cursor={"pointer"}>
             <IoIosLogOut size={35} onClick={logoutUser} />

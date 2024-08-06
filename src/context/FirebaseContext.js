@@ -118,29 +118,81 @@ const FirebaseProvider = ({ children }) => {
     clearCookie(USER_DATA);
   };
 
+  // const addSongToFavouriteList = async ({ data }) => {
+  //   const songInfo = data; // Ensure data contains the correct structure
+  //   setIsAdd(data?.key);
+
+  //   try {
+  //     // Add the song to the user's favourites collection
+  //     await addDoc(collection(db, "users", user?.email, "favourites"), {
+  //       ...songInfo,
+  //     });
+
+  //     await getFavouriteListData();
+
+  //     // Set adding state to false
+  //     setIsAdd(false);
+
+  //     // Show a success toast
+  //     toast({
+  //       title: "Added to favourites",
+  //       status: "success",
+  //       duration: 5000,
+  //       isClosable: true,
+  //       position: "top-right",
+  //     });
+  //   } catch (error) {
+  //     // Handle errors with a toast
+  //     toast({
+  //       title: "Error",
+  //       description: error.message,
+  //       status: "error",
+  //       duration: 5000,
+  //       isClosable: true,
+  //       position: "top-right",
+  //     });
+  //   } finally {
+  //     setIsAdd(false); // Ensure isAdd is set to false in all cases
+  //   }
+  // };
+
   const addSongToFavouriteList = async ({ data }) => {
     const songInfo = data; // Ensure data contains the correct structure
     setIsAdd(data?.key);
 
     try {
-      // Add the song to the user's favourites collection
-      await addDoc(collection(db, "users", user?.email, "favourites"), {
-        ...songInfo,
-      });
+      // Check if the song already exists in the user's favourites collection
+      const favouritesRef = collection(db, "users", user?.email, "favourites");
+      const q = query(favouritesRef, where("key", "==", songInfo.key));
+      const querySnapshot = await getDocs(q);
 
-      await getFavouriteListData();
+      if (!querySnapshot.empty) {
+        // Song already exists, show an error toast
+        toast({
+          title: "Error",
+          description: "This song is already in your favourites list.",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+          position: "top-right",
+        });
+      } else {
+        // Add the song to the user's favourites collection
+        await addDoc(favouritesRef, {
+          ...songInfo,
+        });
 
-      // Set adding state to false
-      setIsAdd(false);
+        await getFavouriteListData();
 
-      // Show a success toast
-      toast({
-        title: "Added to favourites",
-        status: "success",
-        duration: 5000,
-        isClosable: true,
-        position: "top-right",
-      });
+        // Show a success toast
+        toast({
+          title: "Added to favourites",
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+          position: "top-right",
+        });
+      }
     } catch (error) {
       // Handle errors with a toast
       toast({
@@ -264,6 +316,7 @@ const FirebaseProvider = ({ children }) => {
   useEffect(() => {
     isUserExist();
     getFavouriteListData();
+    // eslint-disable-next-line
   }, []);
 
   const values = {
