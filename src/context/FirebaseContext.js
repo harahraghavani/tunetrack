@@ -315,7 +315,6 @@ const FirebaseProvider = ({ children }) => {
 
   useEffect(() => {
     isUserExist();
-    getFavouriteListData();
     // eslint-disable-next-line
   }, []);
 

@@ -19,7 +19,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 const Favourite = () => {
   const navigate = useNavigate();
-  const { states } = useFirebase();
+  const { states, firebaseMethods } = useFirebase();
+  const { getFavouriteListData } = firebaseMethods;
   const { favouriteList, loader } = states;
   const location = useLocation();
   const isFirebaseData = location.pathname === "/favourite";
@@ -57,6 +58,11 @@ const Favourite = () => {
       setHeight(drawerRef?.current?.offsetHeight);
     }
   }, [drawerRef?.current]);
+
+  useEffect(() => {
+    getFavouriteListData();
+    // eslint-disable-next-line
+  }, []);
 
   return (
     <>
