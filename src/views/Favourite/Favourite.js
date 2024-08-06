@@ -15,12 +15,14 @@ import { useMusicStates } from "../../hooks/music/useMusicStates";
 import PlayerDrawer from "../../components/PlayerDrawer";
 import { useEffect } from "react";
 import { TiArrowBackOutline } from "react-icons/ti";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const Favourite = () => {
   const navigate = useNavigate();
   const { states } = useFirebase();
   const { favouriteList, loader } = states;
+  const location = useLocation();
+  const isFirebaseData = location.pathname === "/favourite";
   const {
     drawerRef,
     height,
@@ -29,7 +31,26 @@ const Favourite = () => {
     isPlaying,
     setIsPlaying,
     setSelectedMusicData,
+    audioRef,
+    selectedMusic,
+    handleNext,
   } = useMusicStates();
+
+  useEffect(() => {
+    if (audioRef.current) {
+      const handleEnded = () => {
+        if (favouriteList.length > 0) {
+          handleNext(favouriteList, isFirebaseData);
+        }
+      };
+
+      audioRef?.current?.addEventListener("ended", handleEnded);
+
+      return () => {
+        audioRef?.current?.removeEventListener("ended", handleEnded);
+      };
+    }
+  }, [audioRef.current, selectedMusic, favouriteList, handleNext]);
 
   useEffect(() => {
     if (drawerRef?.current) {
