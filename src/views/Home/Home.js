@@ -20,8 +20,11 @@ import {
   setSearchResults,
   setSearchVal,
 } from "../../redux/reducer/MusicDataReducer";
+import { useFirebase } from "../../hooks/firebase/useFirebase";
 
 const Home = () => {
+  const { firebaseMethods } = useFirebase();
+  const { getFavouriteListData } = firebaseMethods;
   // redux
   const dispatch = useDispatch();
   const { searchVal, searchResults } = useSelector((state) => state.musicData);
@@ -136,6 +139,11 @@ const Home = () => {
       setHeight(drawerRef?.current?.offsetHeight);
     }
   }, [drawerRef?.current]);
+
+  useEffect(() => {
+    getFavouriteListData();
+    // eslint-disable-next-line
+  }, []);
 
   return (
     <>
