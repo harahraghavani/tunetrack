@@ -1,11 +1,5 @@
 // React and Third party libraries
-import {
-  Navigate,
-  Route,
-  Routes,
-  useLocation,
-  useNavigate,
-} from "react-router-dom";
+import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { Suspense, lazy, useEffect } from "react";
 import { Flex } from "@chakra-ui/react";
 

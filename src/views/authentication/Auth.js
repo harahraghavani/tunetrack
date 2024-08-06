@@ -1,4 +1,3 @@
-import React, { useEffect } from "react";
 import { useFirebase } from "../../hooks/firebase/useFirebase";
 import { Button, Flex } from "@chakra-ui/react";
 import { FaGoogle } from "react-icons/fa6";

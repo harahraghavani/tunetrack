@@ -1,5 +1,5 @@
 // React and Third party imports
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { Box, Flex, GridItem, SimpleGrid } from "@chakra-ui/react";
@@ -20,12 +20,8 @@ import {
   setSearchResults,
   setSearchVal,
 } from "../../redux/reducer/MusicDataReducer";
-import { useFirebase } from "../../hooks/firebase/useFirebase";
 
 const Home = () => {
-  const { states } = useFirebase();
-  const { loader } = states;
-
   // redux
   const dispatch = useDispatch();
   const { searchVal, searchResults } = useSelector((state) => state.musicData);
