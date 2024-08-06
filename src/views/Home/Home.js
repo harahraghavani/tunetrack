@@ -55,6 +55,7 @@ const Home = () => {
   const [isCloseIcon, setIsCloseIcon] = useState(false);
   const [debouncedTerm] = useDebounce(searchVal, 1000);
   const [isSearching, setIsSearching] = useState(false);
+  const [isChanging, setIsChanging] = useState(false);
 
   // function to handle search
   const handleSearchData = (e) => {
@@ -62,6 +63,11 @@ const Home = () => {
     setIsCloseIcon(value !== "");
     if (value !== "") {
       dispatch(setSearchVal(value));
+      setIsChanging(true);
+    } else {
+      setIsChanging(false);
+      dispatch(setSearchVal(null));
+      dispatch(setSearchResults(null));
     }
   };
 
@@ -72,10 +78,11 @@ const Home = () => {
     setSelectedMusicData(null);
     setVolume(1);
     setPreviousVolume(1);
+    setIsChanging(false);
   };
 
   const searchAPICallData = () => {
-    if (!searchResults) {
+    if (!searchResults || isChanging) {
       if (debouncedTerm !== null && debouncedTerm !== "") {
         setIsSearching(true);
         searchApiCall({

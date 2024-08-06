@@ -83,8 +83,8 @@ const MusicCard = ({ data }) => {
             boxShadow: "none",
           },
           "& .image-container": {
-            filter: "blur(5px) brightness(0.8)",
-            transition: "filter 0.3s ease", // Smooth transition for blur and darkening
+            filter: { md: "blur(5px) brightness(0.8)" },
+            transition: { md: "filter 0.3s ease" }, // Smooth transition for blur and darkening
           },
         }}
       >
