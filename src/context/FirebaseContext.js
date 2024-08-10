@@ -113,48 +113,11 @@ const FirebaseProvider = ({ children }) => {
           position: "top-right",
         });
       })
-      .finally(() => {});
+      .finally(() => { });
     clearCookie(USER_ACCESS_TOKEN);
     clearCookie(USER_DATA);
   };
 
-  // const addSongToFavouriteList = async ({ data }) => {
-  //   const songInfo = data; // Ensure data contains the correct structure
-  //   setIsAdd(data?.key);
-
-  //   try {
-  //     // Add the song to the user's favourites collection
-  //     await addDoc(collection(db, "users", user?.email, "favourites"), {
-  //       ...songInfo,
-  //     });
-
-  //     await getFavouriteListData();
-
-  //     // Set adding state to false
-  //     setIsAdd(false);
-
-  //     // Show a success toast
-  //     toast({
-  //       title: "Added to favourites",
-  //       status: "success",
-  //       duration: 5000,
-  //       isClosable: true,
-  //       position: "top-right",
-  //     });
-  //   } catch (error) {
-  //     // Handle errors with a toast
-  //     toast({
-  //       title: "Error",
-  //       description: error.message,
-  //       status: "error",
-  //       duration: 5000,
-  //       isClosable: true,
-  //       position: "top-right",
-  //     });
-  //   } finally {
-  //     setIsAdd(false); // Ensure isAdd is set to false in all cases
-  //   }
-  // };
 
   const addSongToFavouriteList = async ({ data }) => {
     const songInfo = data; // Ensure data contains the correct structure
@@ -230,7 +193,6 @@ const FirebaseProvider = ({ children }) => {
         // Delete the document
         await deleteDoc(doc(favouritesCollection, docId));
 
-        // Update the local state
         setFavouriteList((prevList) =>
           prevList.filter((song) => song.key !== songKey)
         );
@@ -334,6 +296,7 @@ const FirebaseProvider = ({ children }) => {
       isAdd,
     },
     accessToken,
+
   };
 
   return (

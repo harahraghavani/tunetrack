@@ -1,4 +1,5 @@
 import { createContext, useEffect, useRef, useState } from "react";
+import { useLocation } from "react-router-dom";
 
 const MusicContext = createContext();
 
@@ -17,8 +18,11 @@ const MusicStateProvider = ({ children }) => {
   const [currentTime, setCurrentTime] = useState(0);
   const drawerRef = useRef(null);
   const [height, setHeight] = useState(0);
+  const location = useLocation()
+  const isFavouritePage = location.pathname === '/favourite'
 
   const handlePlayMusic = (audioLink) => {
+
     if (audioRef.current) {
       // Check if a new song is selected
       if (audioLink && selectedMusic !== audioLink) {
@@ -27,12 +31,14 @@ const MusicStateProvider = ({ children }) => {
 
         // Add event listener for canplaythrough
         const onCanPlayThrough = () => {
+
           audioRef.current
             .play()
             .then(() => {
+
               setIsPlaying(true); // Set state to playing once audio starts
             })
-            .catch((error) => {});
+            .catch((error) => { });
         };
 
         // Remove any existing listener to avoid duplicates
@@ -44,14 +50,17 @@ const MusicStateProvider = ({ children }) => {
         // Load the new source to ensure it's ready for playback
         audioRef.current.addEventListener("canplaythrough", onCanPlayThrough);
         audioRef.current.load();
+
       } else {
+
         // Just play if the song is already loaded
         audioRef.current
           .play()
           .then(() => {
+
             setIsPlaying(true);
           })
-          .catch((error) => {});
+          .catch((error) => { });
       }
     }
   };
@@ -83,8 +92,8 @@ const MusicStateProvider = ({ children }) => {
     const getIndex = isFirebaseData
       ? tracks?.findIndex((trackObj) => trackObj?.key === selectedMusic)
       : tracks?.findIndex(
-          (trackObj) => trackObj["track"]?.key === selectedMusic
-        );
+        (trackObj) => trackObj["track"]?.key === selectedMusic
+      );
 
     if (isShuffled && shuffledIndices.length) {
       const nextIndex = (currentTrackIndex + 1) % shuffledIndices.length;
@@ -109,8 +118,8 @@ const MusicStateProvider = ({ children }) => {
     const getIndex = isFirebaseData
       ? tracks?.findIndex((trackObj) => trackObj?.key === selectedMusic)
       : tracks?.findIndex(
-          (trackObj) => trackObj["track"]?.key === selectedMusic
-        );
+        (trackObj) => trackObj["track"]?.key === selectedMusic
+      );
     if (isShuffled && shuffledIndices.length) {
       const prevIndex =
         (currentTrackIndex - 1 + shuffledIndices.length) %
@@ -227,6 +236,7 @@ const MusicStateProvider = ({ children }) => {
     drawerRef,
     height,
     setHeight,
+    isFavouritePage
   };
 
   return (

@@ -5,14 +5,17 @@ import {
   Heading,
   IconButton,
   Text,
+  useToast,
 } from "@chakra-ui/react";
 import { FaRegCirclePlay, FaRegCirclePause } from "react-icons/fa6";
 import { useMusicStates } from "../hooks/music/useMusicStates";
 import { IoAddCircleOutline } from "react-icons/io5";
 import { useFirebase } from "../hooks/firebase/useFirebase";
 import { FaCheckCircle } from "react-icons/fa";
+import { useLocation } from "react-router-dom";
 
 const MusicCard = ({ data }) => {
+  const toast = useToast()
   const { states, firebaseMethods } = useFirebase();
   const { addSongToFavouriteList, removeSongFromFavouriteList } =
     firebaseMethods;
@@ -29,6 +32,7 @@ const MusicCard = ({ data }) => {
     setSelectedMusic,
     setSelectedMusicData,
     selectedMusic,
+    isFavouritePage
   } = useMusicStates();
   const { hub, images, subtitle, title } = data;
   const { coverart } = images;
@@ -51,11 +55,32 @@ const MusicCard = ({ data }) => {
     }
   };
 
+  const handleRemoveFromFavouriteList = async () => {
+    if (isFavouritePage && isPlaying) {
+      toast({
+        title: "Please pause the music before proceeding",
+        status: "error",
+        duration: 2000,
+        isClosable: true,
+        position: "top-right",
+      })
+    } else {
+      await removeSongFromFavouriteList(data.key)
+      setSelectedMusic(null)
+      setSelectedMusicData(null)
+      if (isFavouritePage) {
+        window.location.reload()
+      }
+    }
+  }
+
   const displayIcon = () => {
     return isFavourite ? (
       <FaCheckCircle
         color="green"
-        onClick={() => removeSongFromFavouriteList(data.key)}
+        onClick={() => {
+          handleRemoveFromFavouriteList()
+        }}
       />
     ) : (
       <IoAddCircleOutline
@@ -69,13 +94,14 @@ const MusicCard = ({ data }) => {
   return (
     <>
       <Card
-        shadow="md"
-        rounded="md"
+        shadow="base"
+        rounded="lg"
         height="100%"
         overflow="hidden"
         position="relative"
         transition="transform 0.3s ease"
         _hover={{
+          boxShadow: "md",
           "& .playButton": {
             opacity: 1,
             transform: { lg: "scale(1.3)" },
@@ -83,7 +109,7 @@ const MusicCard = ({ data }) => {
             boxShadow: "none",
           },
           "& .image-container": {
-            filter: { md: "blur(5px) brightness(0.8)" },
+            filter: { md: "blur(7px) brightness(0.9)" },
             transition: { md: "filter 0.3s ease" }, // Smooth transition for blur and darkening
           },
         }}
@@ -140,7 +166,6 @@ const MusicCard = ({ data }) => {
             fontSize="24px"
           />
         </Box>
-
         <CardBody position="relative" p={4}>
           <Box
             display={{
@@ -180,7 +205,7 @@ const MusicCard = ({ data }) => {
                 }
                 onClick={togglePlayback}
                 bg="transparent"
-                fontSize="24px"
+                fontSize="28px"
               />
             </Box>
           </Box>
@@ -208,7 +233,7 @@ const MusicCard = ({ data }) => {
             aria-label={"add-to-playlist"}
             className="addButton"
             icon={displayIcon()}
-            fontSize="20px"
+            fontSize="21px"
             color={"black"}
             isDisabled={loader || isAdd === data?.key}
             borderTopLeftRadius={0}

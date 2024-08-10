@@ -6,18 +6,20 @@ import {
   GridItem,
   Heading,
   SimpleGrid,
+  useColorMode,
 } from "@chakra-ui/react";
 import { useFirebase } from "../../hooks/firebase/useFirebase";
 import NoData from "../../components/NoData";
-import Spinner from "../../components/Spinner";
 import MusicCard from "../../components/MusicCard";
 import { useMusicStates } from "../../hooks/music/useMusicStates";
 import PlayerDrawer from "../../components/PlayerDrawer";
 import { useEffect } from "react";
 import { TiArrowBackOutline } from "react-icons/ti";
 import { useLocation, useNavigate } from "react-router-dom";
+import RotatingLinesLoader from "../../components/RotatingLinesLoader";
 
 const Favourite = () => {
+  const { colorMode } = useColorMode()
   const navigate = useNavigate();
   const { states, firebaseMethods } = useFirebase();
   const { getFavouriteListData } = firebaseMethods;
@@ -32,6 +34,7 @@ const Favourite = () => {
     isPlaying,
     setIsPlaying,
     setSelectedMusicData,
+    setSelectedMusic,
     audioRef,
     selectedMusic,
     handleNext,
@@ -74,36 +77,45 @@ const Favourite = () => {
             alignItems="center"
             height={"calc(100vh - 123px)"}
           >
-            <Spinner />
+            <RotatingLinesLoader />
           </Flex>
         ) : (
           <>
-            <Flex
-              justifyContent="space-between"
-              alignItems="center"
-              mx="30px"
-              mt={"20px"}
-            >
-              <Heading size="sm" textTransform="uppercase" fontWeight="bold">
-                Favourites
-              </Heading>
-              <Button
-                leftIcon={<TiArrowBackOutline size={22} />}
-                variant="outline"
-                onClick={() => {
-                  setIsPlaying(!isPlaying);
-                  setSelectedMusicData(null);
-                  navigate("/");
-                }}
+            <Box mx="30px" mt="20px">
+              <Flex
+                justifyContent="space-between"
+                alignItems="center"
+                width="100%"
+                px="20px"
+                py="10px"
+                boxShadow="md"
+                borderRadius="8px"
+                border={colorMode === "light" ? "1px solid rgba(0, 0, 0, 0.4)" : "1px solid rgba(255,255,255, 0.4)"}
               >
-                Back
-              </Button>
-            </Flex>
+                <Heading size="sm" textTransform="uppercase" fontWeight="bold">
+                  Favourites
+                </Heading>
+                <Button
+                  leftIcon={<TiArrowBackOutline size={22} />}
+                  onClick={() => {
+                    setIsPlaying(!isPlaying);
+                    setSelectedMusic(null);
+                    setSelectedMusicData(null);
+                    navigate("/");
+                  }}
+                  bg="transparent"
+                  _hover={{ bg: "transparent", boxShadow: "none" }}
+                >
+                  Back
+                </Button>
+              </Flex>
+            </Box>
             {favouriteList && favouriteList?.length > 0 ? (
               <Box
                 mt="50px"
-                mb={height === 0 ? "50px" : height + 40}
+                mb={height === 0 ? "50px" : height + 50}
                 transition={"all 0.3s ease"}
+                className="favourite-list"
               >
                 <SimpleGrid
                   justifyContent="center"
@@ -117,7 +129,7 @@ const Favourite = () => {
                     xl: 4,
                     "2xl": 5,
                   }}
-                  gap={6}
+                  gap={8}
                 >
                   {favouriteList?.map((data) => {
                     return (
@@ -133,10 +145,11 @@ const Favourite = () => {
             )}
           </>
         )}
-      </Box>
+      </Box >
       {selectedMusicData && (
         <PlayerDrawer data={favouriteList} drawerRef={drawerRef} />
-      )}
+      )
+      }
     </>
   );
 };

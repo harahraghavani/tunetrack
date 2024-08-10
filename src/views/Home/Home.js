@@ -21,6 +21,7 @@ import {
   setSearchVal,
 } from "../../redux/reducer/MusicDataReducer";
 import { useFirebase } from "../../hooks/firebase/useFirebase";
+import RotatingLinesLoader from "../../components/RotatingLinesLoader";
 
 const Home = () => {
   const { firebaseMethods } = useFirebase();
@@ -175,12 +176,12 @@ const Home = () => {
             alignItems="center"
             height={"calc(100vh - 123px)"}
           >
-            <Spinner />
+            <RotatingLinesLoader />
           </Flex>
         ) : searchResults && searchResults?.length > 0 ? (
           <Box
             mt="50px"
-            mb={height === 0 ? "50px" : height + 40}
+            mb={height === 0 ? "50px" : height + 50}
             transition={"all 0.3s ease"}
           >
             <SimpleGrid
@@ -195,7 +196,7 @@ const Home = () => {
                 xl: 4,
                 "2xl": 5,
               }}
-              gap={6}
+              gap={8}
             >
               {searchResults?.map((data) => {
                 const musicData = data?.track;

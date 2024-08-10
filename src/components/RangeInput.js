@@ -1,5 +1,6 @@
 import React from "react";
 import { Input, useColorMode } from "@chakra-ui/react";
+import { useMusicStates } from "../hooks/music/useMusicStates";
 
 const RangeInput = ({
   value,
@@ -11,6 +12,7 @@ const RangeInput = ({
   height,
 }) => {
   const { colorMode } = useColorMode();
+  const { isPlaying } = useMusicStates()
   return (
     <Input
       type="range"
@@ -23,13 +25,12 @@ const RangeInput = ({
       rounded="full"
       step={step}
       backgroundColor={
-        colorMode === "light" ? "white" : "rgba(255, 255, 255, 0.06)"
+        colorMode === "light" ? isPlaying ? "rgba(255, 255, 255, 0.06)" : "white" : "rgba(255, 255, 255, 0.06)"
       }
+      _hover={{ backgroundColor: colorMode === "light" ? isPlaying ? "rgba(255, 255, 255, 0.06)" : "white" : "rgba(255, 255, 255, 0.06)" }}
       transition="all 0.3s linear"
       px={isStep ? 0 : "auto"}
       border={isStep ? "none" : ""}
-      fillColor="teal" // Optional: Customize the fill color
-      trackColor="gray.300" // Optional: Customize the track color
     />
   );
 };

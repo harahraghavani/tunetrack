@@ -1,4 +1,4 @@
-import { Box, Flex, IconButton } from "@chakra-ui/react";
+import { Box, Flex, IconButton, useColorMode } from "@chakra-ui/react";
 import { useMusicStates } from "../hooks/music/useMusicStates";
 import RangeInput from "./RangeInput";
 import { FaRegCirclePause, FaRegCirclePlay } from "react-icons/fa6";
@@ -7,6 +7,7 @@ import { useLocation } from "react-router-dom";
 
 const PlayerControls = ({ data, audioLink }) => {
   const location = useLocation();
+  const { colorMode } = useColorMode()
   const isFirebaseData = location.pathname === "/favourite";
   const {
     currentTime,
@@ -49,10 +50,10 @@ const PlayerControls = ({ data, audioLink }) => {
     <Box>
       <Flex
         justifyContent={{
-          base: "start",
+          base: "center",
           md: "center",
         }}
-        mb={2}
+        mb={4}
       >
         <IconButton
           aria-label={"Previous"}
@@ -60,8 +61,9 @@ const PlayerControls = ({ data, audioLink }) => {
           _hover={{ bg: "transparent", boxShadow: "none" }}
           bg="transparent"
           boxShadow={"none"}
-          fontSize="28px"
+          fontSize="30px"
           onClick={() => handlePrevious(data, isFirebaseData)}
+          color={colorMode === "light" ? isPlaying ? "white" : "black" : "white"}
         />
         <IconButton
           aria-label={isPlaying ? "Pause" : "Play"}
@@ -70,7 +72,8 @@ const PlayerControls = ({ data, audioLink }) => {
           onClick={togglePlayback}
           bg="transparent"
           boxShadow={"none"}
-          fontSize="28px"
+          fontSize="30px"
+          color={colorMode === "light" ? isPlaying ? "white" : "black" : "white"}
         />
         <IconButton
           aria-label={"Next"}
@@ -78,8 +81,9 @@ const PlayerControls = ({ data, audioLink }) => {
           _hover={{ bg: "transparent", boxShadow: "none" }}
           bg="transparent"
           boxShadow={"none"}
-          fontSize="28px"
+          fontSize="30px"
           onClick={() => handleNext(data, isFirebaseData)}
+          color={colorMode === "light" ? isPlaying ? "white" : "black" : "white"}
         />
       </Flex>
       <Flex justifyContent="center" alignItems="center" gap={3}>

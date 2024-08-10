@@ -16,9 +16,25 @@ import {
 } from "react-icons/io";
 import { Audio } from "react-loader-spinner";
 import PlayerControls from "./PlayerControls";
+import { keyframes } from "@chakra-ui/react";
 
 const PlayerDrawer = ({ data, drawerRef }) => {
   const { colorMode } = useColorMode();
+  //   const gradientAnimation = keyframes`
+  //   0% { background-position: 0% 50%; }
+  //   50% { background-position: 100% 50%; }
+  //   100% { background-position: 0% 50%; }
+  // `;
+  // Define smoother gradient animation
+  const gradientAnimation = keyframes`
+  0% { background-position: 0% 50%; }
+  25% { background-position: 50% 50%; }
+  50% { background-position: 100% 50%; }
+  75% { background-position: 50% 50%; }
+  100% { background-position: 0% 50%; }
+`;
+  // Define a dark blue gradient palette
+  const darkBlueGradient = "linear-gradient(270deg, #001f3f, #00557f, #003f7f, #002f5f, #001f4f)";
 
   const {
     isPlaying,
@@ -50,6 +66,16 @@ const PlayerDrawer = ({ data, drawerRef }) => {
       borderTopEndRadius={"15px"}
       borderTopLeftRadius={"15px"}
       ref={drawerRef}
+      backgroundSize="200% 200%"
+      backgroundImage={
+        isPlaying
+          ? darkBlueGradient
+          : colorMode === "light"
+            ? "gray.100"
+            : "gray.700"
+      }
+      animation={isPlaying ? `${gradientAnimation} 5s ease infinite` : ""}
+      color={colorMode === "light" ? isPlaying ? "white" : "black" : "white"}
     >
       <SimpleGrid
         justifyContent="center"
@@ -63,7 +89,10 @@ const PlayerDrawer = ({ data, drawerRef }) => {
           xl: 3,
           "2xl": 3,
         }}
-        gap={4}
+        gap={{
+          base: 8,
+          md: 4
+        }}
         width={"100%"}
       >
         <GridItem>
@@ -82,19 +111,6 @@ const PlayerDrawer = ({ data, drawerRef }) => {
         </GridItem>
         <GridItem>
           <Flex justifyContent="center" alignItems="center" gap={2}>
-            <Box>
-              {isPlaying && (
-                <Audio
-                  height="25"
-                  width="25"
-                  color={colorMode === "light" ? "#000000" : "#FFFFFF"}
-                  ariaLabel="audio-loading"
-                  wrapperStyle={{}}
-                  wrapperClass="wrapper-class"
-                  visible={true}
-                />
-              )}
-            </Box>
             <Box>
               {volume <= 0 && (
                 <IoIosVolumeOff

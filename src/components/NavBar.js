@@ -14,7 +14,7 @@ const NavBar = () => {
   const navbarRef = useRef(null);
   const [hasScrolled, setHasScrolled] = useState(false);
   const navigate = useNavigate();
-  const { isPlaying, setIsPlaying, setSelectedMusicData } = useMusicStates();
+  const { isPlaying, setIsPlaying, setSelectedMusicData, setSelectedMusic } = useMusicStates();
 
   useEffect(() => {
     let prevScrollpos = window.pageYOffset;
@@ -68,7 +68,12 @@ const NavBar = () => {
           as="h4"
           size="md"
           cursor="pointer"
-          onClick={() => navigate("/")}
+          onClick={() => {
+            setIsPlaying(!isPlaying);
+            setSelectedMusic(null);
+            setSelectedMusicData(null);
+            navigate("/");
+          }}
         >
           TuneTrack
         </Heading>
@@ -86,6 +91,7 @@ const NavBar = () => {
                 size={35}
                 onClick={() => {
                   setIsPlaying(!isPlaying);
+                  setSelectedMusic(null);
                   setSelectedMusicData(null);
                   navigate("/favourite");
                 }}
