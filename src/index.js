@@ -10,6 +10,7 @@ import { PersistGate } from "redux-persist/integration/react";
 import Spinner from "./components/Spinner";
 import { FirebaseProvider } from "./context/FirebaseContext";
 import { BrowserRouter } from "react-router-dom";
+import { SpeedInsights } from "@vercel/speed-insights/react"
 
 const theme = extendTheme({
   styles: {
@@ -30,6 +31,7 @@ root.render(
           <ChakraProvider theme={theme} cssVarsRoot="#root">
             <MusicStateProvider>
               <App />
+              <SpeedInsights />
               <Toaster />
             </MusicStateProvider>
           </ChakraProvider>

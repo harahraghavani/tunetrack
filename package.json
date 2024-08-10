@@ -13,6 +13,7 @@
     "@testing-library/user-event": "^13.5.0",
     "@tsparticles/engine": "^3.5.0",
     "@tsparticles/react": "^3.0.0",
+    "@vercel/speed-insights": "^1.0.12",
     "audio-decode": "^2.2.0",
     "axios": "^1.7.2",
     "crypto-js": "^4.2.0",
