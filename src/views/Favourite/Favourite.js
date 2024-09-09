@@ -19,7 +19,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import RotatingLinesLoader from "../../components/RotatingLinesLoader";
 
 const Favourite = () => {
-  const { colorMode } = useColorMode()
+  const { colorMode } = useColorMode();
   const navigate = useNavigate();
   const { states, firebaseMethods } = useFirebase();
   const { getFavouriteListData } = firebaseMethods;
@@ -88,9 +88,13 @@ const Favourite = () => {
                 width="100%"
                 px="20px"
                 py="10px"
-                boxShadow="md"
+                boxShadow="inner"
                 borderRadius="8px"
-                border={colorMode === "light" ? "1px solid rgba(0, 0, 0, 0.4)" : "1px solid rgba(255,255,255, 0.4)"}
+                border={
+                  colorMode === "light"
+                    ? "1px solid rgba(0, 0, 0, 0.4)"
+                    : "1px solid rgba(255,255,255, 0.4)"
+                }
               >
                 <Heading size="sm" textTransform="uppercase" fontWeight="bold">
                   Favourites
@@ -145,11 +149,10 @@ const Favourite = () => {
             )}
           </>
         )}
-      </Box >
+      </Box>
       {selectedMusicData && (
         <PlayerDrawer data={favouriteList} drawerRef={drawerRef} />
-      )
-      }
+      )}
     </>
   );
 };
